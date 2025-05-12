@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace MagestyMediaPlayer.Views
+namespace MagestyMediaPlayer.UI.Views
 {
     public partial class MainWindow : Window
     {

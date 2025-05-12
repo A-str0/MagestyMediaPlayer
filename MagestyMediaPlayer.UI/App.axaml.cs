@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 using MagestyMediaPlayer.ViewModels;
 using MagestyMediaPlayer.Views;
 
-namespace MagestyMediaPlayer
+namespace MagestyMediaPlayer.UI
 {
     public partial class App : Application
     {
