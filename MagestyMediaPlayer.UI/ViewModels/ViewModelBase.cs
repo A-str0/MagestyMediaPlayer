@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 
-namespace MagestyMediaPlayer.ViewModels
+namespace MagestyMediaPlayer.UI.ViewModels
 {
     public class ViewModelBase : ReactiveObject
     {

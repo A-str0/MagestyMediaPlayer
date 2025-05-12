@@ -6,4 +6,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="LibVLCSharp" Version="3.9.3" />
+    <PackageReference Include="LibVLCSharp.Avalonia" Version="3.9.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MagestyMediaPlayer.Core\MagestyMediaPlayer.Core.csproj" />
+  </ItemGroup>
+
 </Project>

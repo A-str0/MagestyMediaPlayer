@@ -25,4 +25,8 @@
     </PackageReference>
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MagestyMediaPlayer.Infrastructure\MagestyMediaPlayer.Infrastructure.csproj" />
+  </ItemGroup>
 </Project>
