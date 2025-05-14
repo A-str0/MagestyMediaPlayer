@@ -14,10 +14,9 @@ namespace MagestyMediaPlayer.UI.ViewModels
     {
         private readonly IMediaPlaybackService _mediaPlaybackService;
 
-        public ReactiveCommand<Unit, Unit> PlayPauseCommand;
-        public ReactiveCommand<Unit, Unit> NextCommand;
-        public ReactiveCommand<Unit, Unit> PreviousCommand;
-
+        public ReactiveCommand<Unit, Unit> PlayPauseCommand { get; private set; }
+        public ReactiveCommand<Unit, Unit> NextCommand { get; private set; }
+        public ReactiveCommand<Unit, Unit> PreviousCommand { get; private set; }
 
         public PlaybackControlViewModel()
         {

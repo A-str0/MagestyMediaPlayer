@@ -10,4 +10,8 @@ public partial class LibraryView : UserControl
     {
         InitializeComponent();
     }
+
+    private void Binding(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)
+    {
+    }
 }

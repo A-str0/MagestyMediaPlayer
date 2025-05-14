@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MagestyMediaPlayer.Core.Interfaces;
@@ -26,7 +27,14 @@ namespace MagestyMediaPlayer.UI.ViewModels
             set => this.RaiseAndSetIfChanged(ref _items, value);
         }
 
-        public ReactiveCommand<MediaItemViewModel, Unit> PlayCommand;
+        private MediaItemViewModel _selectedItem;
+        public MediaItemViewModel SelectedItem
+        {
+            get => _selectedItem;
+            set => this.RaiseAndSetIfChanged(ref _selectedItem, value);
+        }
+
+        public ReactiveCommand<MediaItemViewModel, Unit> PlayCommand { get; set; }
 
         public LibraryViewModel()
         {
@@ -36,6 +44,10 @@ namespace MagestyMediaPlayer.UI.ViewModels
             _localMediaRepository = serviceProvider.GetRequiredService<IMediaRepository>() as LocalMediaRepository;
 
             PlayCommand = ReactiveCommand.CreateFromTask<MediaItemViewModel>(PlayAsync);
+
+            this.WhenAnyValue(x => x.SelectedItem)
+                .Where(item => item != null)
+                .Subscribe(async item => await PlayCommand.Execute(item));
 
             Task.Run(async () => await LoadLibraryAsync());
         }

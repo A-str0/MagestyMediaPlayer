@@ -8,10 +8,14 @@
              x:Class="MagestyMediaPlayer.UI.Views.LibraryView"
 			 x:DataType="vm:LibraryViewModel">
 	<DockPanel>
-		<ListBox Margin="0,4,0,0" ItemsSource="{Binding Items}" Background="Gray">
+		<ListBox Margin="0,4,0,0" 
+				 ItemsSource="{Binding Items}" 
+				 Background="Gray"
+				 SelectionMode="Single"
+				 SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
-					<views:MediaItemView/>
+					<views:MediaItemView />
 				</DataTemplate>
 			</ListBox.ItemTemplate>
 		</ListBox>

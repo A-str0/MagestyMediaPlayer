@@ -15,6 +15,8 @@ namespace MagestyMediaPlayer.UI.ViewModels
         private MediaItem _mediaItem;
         public MediaItem MediaItem => _mediaItem;
 
+        public event Action Test;
+
         public MediaItemViewModel(MediaItem mediaItem)
         {
             _mediaItem = mediaItem;

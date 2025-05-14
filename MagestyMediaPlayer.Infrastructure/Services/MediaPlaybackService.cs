@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -146,8 +147,10 @@ namespace MagestyMediaPlayer.Infrastructure.Services
 
             if (!_queue.Contains(mediaItem))
             {
-                throw new NotImplementedException("Queue generating when track selected");
+                await AddToQueueAsync(mediaItem);
             }
+
+            Debug.WriteLine($"Playing: {mediaItem.Title}");
 
             _currentIndex = _queue.IndexOf(mediaItem);
             CurrentMediaItem = mediaItem;
