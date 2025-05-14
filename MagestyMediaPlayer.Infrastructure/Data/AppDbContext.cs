@@ -1,7 +1,7 @@
 ﻿using MagestyMediaPlayer.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Player.Infrastructure.Data
+namespace MagestyMediaPlayer.Infrastructure.Data
 {
     public class AppDbContext : DbContext
     {

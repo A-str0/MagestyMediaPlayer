@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Reflection.PortableExecutable;
 using Avalonia;
 using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
-using Player.Infrastructure.Data;
+using MagestyMediaPlayer.Infrastructure;
+using MagestyMediaPlayer.Infrastructure.Data;
 
 namespace MagestyMediaPlayer.UI
 {

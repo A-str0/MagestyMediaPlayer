@@ -1,8 +1,8 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using MagestyMediaPlayer.ViewModels;
-using MagestyMediaPlayer.Views;
+using MagestyMediaPlayer.UI.ViewModels;
+using MagestyMediaPlayer.UI.Views;
 
 namespace MagestyMediaPlayer.UI
 {
