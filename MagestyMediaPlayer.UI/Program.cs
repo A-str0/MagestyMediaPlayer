@@ -5,6 +5,9 @@ using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
 using MagestyMediaPlayer.Infrastructure;
 using MagestyMediaPlayer.Infrastructure.Data;
+using MagestyMediaPlayer.UI.ViewModels;
+using MagestyMediaPlayer.Core.Interfaces;
+using MagestyMediaPlayer.Infrastructure.Services;
 
 namespace MagestyMediaPlayer.UI
 {
@@ -29,7 +32,11 @@ namespace MagestyMediaPlayer.UI
 
             services.AddDbContext<AppDbContext>();
 
-            //services.AddSingleton<MediaPlaybackService>();
+            services.AddSingleton<MainWindowViewModel>();
+            services.AddSingleton<LibraryViewModel>();
+
+            services.AddSingleton<IMediaRepository, LocalMediaRepository>();
+            services.AddSingleton<IMediaPlaybackService, MediaPlaybackService>();
 
             Services = services.BuildServiceProvider();
         }

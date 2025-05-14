@@ -25,7 +25,7 @@
 		</Grid.RowDefinitions>
 		
 		<!-- Library list-->
-		<views:LibraryView Grid.Row="0" Background="Gray"/>
+		<views:LibraryView x:Name="LibraryView" Grid.Row="0" Background="Gray"/>
 		
 		<!-- Playback Control Panel -->
 		<views:PlaybackControlView Grid.Row="1">

@@ -8,18 +8,12 @@
              x:Class="MagestyMediaPlayer.UI.Views.LibraryView"
 			 x:DataType="vm:LibraryViewModel">
 	<DockPanel>
-		<ItemsControl Margin="0,4,0,0" ItemsSource="{Binding Items}" Background="Black">
-			<ItemsControl.ItemsPanel>
-				<ItemsPanelTemplate>
-					<WrapPanel/>
-				</ItemsPanelTemplate>
-			</ItemsControl.ItemsPanel>
-
-			<ItemsControl.ItemTemplate>
+		<ListBox Margin="0,4,0,0" ItemsSource="{Binding Items}" Background="Gray">
+			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<views:MediaItemView/>
 				</DataTemplate>
-			</ItemsControl.ItemTemplate>
-		</ItemsControl>
+			</ListBox.ItemTemplate>
+		</ListBox>
 	</DockPanel>
 </UserControl>

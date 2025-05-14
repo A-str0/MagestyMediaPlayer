@@ -1,4 +1,6 @@
 using Avalonia.Controls;
+using MagestyMediaPlayer.UI.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MagestyMediaPlayer.UI.Views
 {
@@ -7,6 +9,15 @@ namespace MagestyMediaPlayer.UI.Views
         public MainWindow()
         {
             InitializeComponent();
+
+            var serviceProvider = Program.Services;
+            DataContext = serviceProvider.GetRequiredService<MainWindowViewModel>();
+
+            var libraryView = this.FindControl<LibraryView>("LibraryView");
+            if (libraryView != null)
+            {
+                libraryView.DataContext = serviceProvider.GetRequiredService<LibraryViewModel>();
+            }
         }
     }
 }

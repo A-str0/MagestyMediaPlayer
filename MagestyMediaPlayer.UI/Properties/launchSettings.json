@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MagestyMediaPlayer.UI": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\magesty_\\Projects\\MagestyMediaPlayer\\MagestyMediaPlayer.UI\\bin\\Debug\\net9.0"
+    }
+  }
+}

@@ -5,6 +5,7 @@ using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using MagestyMediaPlayer.Core.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 
 namespace MagestyMediaPlayer.UI.ViewModels
@@ -18,9 +19,11 @@ namespace MagestyMediaPlayer.UI.ViewModels
         public ReactiveCommand<Unit, Unit> PreviousCommand;
 
 
-        public PlaybackControlViewModel(IMediaPlaybackService mediaPlaybackService)
+        public PlaybackControlViewModel()
         {
-            _mediaPlaybackService = mediaPlaybackService;
+            IServiceProvider serviceProvider = Program.Services.CreateScope().ServiceProvider;
+
+            _mediaPlaybackService = serviceProvider.GetRequiredService<IMediaPlaybackService>();
 
             PlayPauseCommand = ReactiveCommand.Create(PlayPause);
             NextCommand = ReactiveCommand.CreateFromTask(NextAsync);

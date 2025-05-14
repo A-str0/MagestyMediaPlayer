@@ -9,10 +9,10 @@ using System.Text;
 using System.Threading.Tasks;
 using MagestyMediaPlayer.Core.Interfaces;
 using MagestyMediaPlayer.Core.Models;
+using MagestyMediaPlayer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using MonoTorrent;
 using MonoTorrent.Client;
-using Player.Infrastructure.Data;
 
 namespace MagestyMediaPlayer.Infrastructure.Services
 {
