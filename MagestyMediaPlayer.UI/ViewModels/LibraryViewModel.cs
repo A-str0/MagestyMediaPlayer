@@ -19,7 +19,7 @@ namespace MagestyMediaPlayer.UI.ViewModels
         private readonly IMediaPlaybackService _mediaPlaybackService;
         private readonly LocalMediaRepository _localMediaRepository;
 
-        private ObservableCollection<MediaItemViewModel> _items;
+        private ObservableCollection<MediaItemViewModel> _items = new ObservableCollection<MediaItemViewModel>();
         public ObservableCollection<MediaItemViewModel> Items
         {
             get => _items;

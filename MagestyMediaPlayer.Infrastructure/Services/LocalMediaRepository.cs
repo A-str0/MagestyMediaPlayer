@@ -18,13 +18,13 @@ namespace MagestyMediaPlayer.Infrastructure.Services
 {
     public class LocalMediaRepository : IMediaRepository
     {
-        private readonly AppDbContext _context;
+        private IDbContextFactory<AppDbContext> _contextFactory;
 
         private readonly string[] _searchPaths;
 
-        public LocalMediaRepository(AppDbContext context)
+        public LocalMediaRepository(IDbContextFactory<AppDbContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
             _searchPaths =
             [
                 Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
@@ -36,16 +36,24 @@ namespace MagestyMediaPlayer.Infrastructure.Services
         {
             if (mediaItem.SourceType != SourceType.Local || !File.Exists(mediaItem.SourceUri))
                 throw new ArgumentException("Invalid local file path");
+            
+            using var context = _contextFactory.CreateDbContext();
 
-            var existing = await _context.MediaItems
+            var existing = await context.MediaItems
                 .FirstOrDefaultAsync(m => m.SourceUri == mediaItem.SourceUri && m.SourceType == SourceType.Local);
 
             if (existing == null)
             {
                 mediaItem.Id = Guid.NewGuid();
                 mediaItem.AddedDate = DateTime.Now;
-                _context.MediaItems.Add(mediaItem);
-                await _context.SaveChangesAsync();
+
+                Debug.WriteLine($"Adding file {mediaItem.FileName} to DB");
+                mediaItem.Print();
+
+                context.MediaItems.Add(mediaItem);
+                await context.SaveChangesAsync();
+
+                Debug.WriteLine($"{mediaItem.FileName} was added to DB");
             }
         }
 
@@ -56,17 +64,21 @@ namespace MagestyMediaPlayer.Infrastructure.Services
 
         public async Task DeleteMediaItemAsync(Guid id)
         {
-            var mediaItem = await _context.MediaItems.FindAsync(id);
+            using var context = _contextFactory.CreateDbContext();
+
+            var mediaItem = await context.MediaItems.FindAsync(id);
             if (mediaItem != null && mediaItem.SourceType == SourceType.Local)
             {
-                _context.MediaItems.Remove(mediaItem);
-                await _context.SaveChangesAsync();
+                context.MediaItems.Remove(mediaItem);
+                await context.SaveChangesAsync();
             }
         }
 
         public async Task UpdateAsync(MediaItem mediaItem)
         {
-            var existing = await _context.MediaItems.FindAsync(mediaItem.Id);
+            using var context = _contextFactory.CreateDbContext();
+
+            var existing = await context.MediaItems.FindAsync(mediaItem.Id);
             if (existing == null || existing.SourceType != SourceType.Local)
                 throw new InvalidOperationException("MediaItem not found or not local");
 
@@ -78,24 +90,28 @@ namespace MagestyMediaPlayer.Infrastructure.Services
             existing.Year = mediaItem.Year;
             existing.MediaType = mediaItem.MediaType;
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<MediaItem>> GetAllAsync()
         {
-            return await _context.MediaItems
+            using var context = _contextFactory.CreateDbContext();
+
+            return await context.MediaItems
                 .Where(m => m.SourceType == SourceType.Local)
                 .ToListAsync();
         }
 
         public async Task<MediaItem> GetByIdAsync(Guid id)
         {
-            return await _context.MediaItems.FirstOrDefaultAsync(m => m.Id == id && m.SourceType == SourceType.Local);
+            using var context = _contextFactory.CreateDbContext();
+
+            return await context.MediaItems.FirstOrDefaultAsync(m => m.Id == id && m.SourceType == SourceType.Local);
         }
 
         public IEnumerable<string> SearchLocalFiles(string query, string category)
         {
-            var extensions = category == "101" ? new[] { ".mp3", ".flac" } : new[] { ".mp4", ".mkv" };
+            var extensions = category == "101" ? new[] { ".mp3", ".flac", ".wav" } : new[] { ".mp4", ".mkv" };
             var files = new List<string>();
 
             foreach (var path in _searchPaths)

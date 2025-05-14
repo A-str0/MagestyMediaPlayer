@@ -41,8 +41,8 @@ namespace MagestyMediaPlayer.Infrastructure.Data
                 entity.Property(m => m.Artist).HasMaxLength(100);
                 entity.Property(m => m.Album).HasMaxLength(100);
                 entity.Property(m => m.Genre).HasMaxLength(50);
-                entity.Property(m => m.SourceUri).HasMaxLength(500);
-                entity.Property(m => m.FileName).HasMaxLength(200);
+                entity.Property(m => m.SourceUri).IsRequired().HasMaxLength(500);
+                entity.Property(m => m.FileName).IsRequired().HasMaxLength(200);
                 entity.Property(m => m.AddedDate).HasDefaultValueSql("datetime('now')");
             });
 

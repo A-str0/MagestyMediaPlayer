@@ -30,7 +30,7 @@ namespace MagestyMediaPlayer.UI
         {
             var services = new ServiceCollection();
 
-            services.AddDbContext<AppDbContext>();
+            services.AddDbContextFactory<AppDbContext>();
 
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<LibraryViewModel>();

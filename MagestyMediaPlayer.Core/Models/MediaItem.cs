@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace MagestyMediaPlayer.Core.Models
 {
@@ -24,12 +25,12 @@ namespace MagestyMediaPlayer.Core.Models
         public Guid Id { get; set; }
 
         public string Title { get; set; }
-        public string Artist { get; set; }
-        public string Album { get; set; }
-        public string Genre { get; set; }
+        public string? Artist { get; set; }
+        public string? Album { get; set; }
+        public string? Genre { get; set; }
 
         public TimeSpan? Duration { get; set; }
-        public uint Year { get; set; }
+        public uint? Year { get; set; }
 
         public string SourceUri { get; set; }
         public string FileName { get; set; }
@@ -39,5 +40,10 @@ namespace MagestyMediaPlayer.Core.Models
         public DateTime AddedDate { get; set; }
 
         public virtual ICollection<PlaylistItem> PlaylistItems { get; set; } = new List<PlaylistItem>();
+
+        public virtual void Print()
+        {
+            Debug.WriteLine($"({Id}) {Title} - {Artist} | {Album}, {Genre}; URI: {SourceUri}; Added to DB: {AddedDate}");
+        }
     }
 }
