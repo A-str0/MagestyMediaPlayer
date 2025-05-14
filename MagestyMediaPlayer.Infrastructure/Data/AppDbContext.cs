@@ -9,8 +9,6 @@ namespace MagestyMediaPlayer.Infrastructure.Data
         public DbSet<Playlist> Playlists { get; set; }
         public DbSet<PlaylistItem> PlaylistItems { get; set; }
 
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             Console.WriteLine("Configuring ", this);
@@ -18,7 +16,7 @@ namespace MagestyMediaPlayer.Infrastructure.Data
             // TODO: разделить для разных ОС
             string dbPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "MajesticPlayer",
+                "MagestyMediaPlayer",
                 "database.db"
             );
             options.UseSqlite($"Data Source={dbPath}");
@@ -26,48 +24,48 @@ namespace MagestyMediaPlayer.Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<MediaItem>()
-                .HasKey(m => m.Id);
-            modelBuilder.Entity<MediaItem>()
-                .Property(m => m.Title)
-                .IsRequired()
-                .HasMaxLength(200);
-            modelBuilder.Entity<MediaItem>()
-                .Property(m => m.Artist)
-                .HasMaxLength(100);
-            modelBuilder.Entity<MediaItem>()
-                .Property(m => m.Album)
-                .HasMaxLength(100);
-            modelBuilder.Entity<MediaItem>()
-                .Property(m => m.Genre)
-                .HasMaxLength(50);
-            modelBuilder.Entity<MediaItem>()
-                .Property(m => m.SourceUri)
-                .HasMaxLength(500);
-            modelBuilder.Entity<MediaItem>()
-                .Property(m => m.FileName)
-                .HasMaxLength(500);
+            // Configure Playlist
+            modelBuilder.Entity<Playlist>(entity =>
+            {
+                entity.Property(p => p.Id).ValueGeneratedNever(); // Use GUID provided by app
+                entity.Property(p => p.Name).IsRequired().HasMaxLength(100);
+                entity.Property(p => p.Description).HasMaxLength(500); // Optional max length
+                entity.Property(p => p.CreatedDate).HasDefaultValueSql("datetime('now')");
+            });
 
-            modelBuilder.Entity<Playlist>()
-                .HasKey(p => p.Id);
-            modelBuilder.Entity<Playlist>()
-                .Property(p => p.Name)
-                .IsRequired()
-                .HasMaxLength(100);
-            modelBuilder.Entity<Playlist>()
-                .Property(p => p.Description)
-                .HasMaxLength(500);
+            // Configure MediaItem
+            modelBuilder.Entity<MediaItem>(entity =>
+            {
+                entity.Property(m => m.Id).ValueGeneratedNever(); // Use GUID provided by app
+                entity.Property(m => m.Title).IsRequired().HasMaxLength(200);
+                entity.Property(m => m.Artist).HasMaxLength(100);
+                entity.Property(m => m.Album).HasMaxLength(100);
+                entity.Property(m => m.Genre).HasMaxLength(50);
+                entity.Property(m => m.SourceUri).HasMaxLength(500);
+                entity.Property(m => m.FileName).HasMaxLength(200);
+                entity.Property(m => m.AddedDate).HasDefaultValueSql("datetime('now')");
+            });
 
-            modelBuilder.Entity<PlaylistItem>()
-                .HasKey(pi => new { pi.PlaylistId, pi.MediaItemId });
-            modelBuilder.Entity<PlaylistItem>()
-                .HasOne(pi => pi.Playlist)
-                .WithMany(p => p.PlaylistItems)
-                .HasForeignKey(pi => pi.PlaylistId);
-            modelBuilder.Entity<PlaylistItem>()
-                .HasOne(pi => pi.MediaItem)
-                .WithMany(m => m.PlaylistItems)
-                .HasForeignKey(pi => pi.MediaItemId);
+            // Configure PlaylistItem and many-to-many relationship
+            modelBuilder.Entity<PlaylistItem>(entity =>
+            {
+                entity.Property(pi => pi.Id).ValueGeneratedNever(); // Optional, can be auto-generated
+                entity.HasKey(pi => new { pi.PlaylistId, pi.MediaItemId }); // Composite key
+                entity.HasOne(pi => pi.Playlist)
+                    .WithMany(p => p.PlaylistItems)
+                    .HasForeignKey(pi => pi.PlaylistId);
+                entity.HasOne(pi => pi.MediaItem)
+                    .WithMany(m => m.PlaylistItems)
+                    .HasForeignKey(pi => pi.MediaItemId);
+            });
+
+            // Configure enums as integers (if not using EF Core value converters)
+            modelBuilder.Entity<MediaItem>()
+                .Property(m => m.MediaType)
+                .HasConversion<int>();
+            modelBuilder.Entity<MediaItem>()
+                .Property(m => m.SourceType)
+                .HasConversion<int>();
         }
     }
 }

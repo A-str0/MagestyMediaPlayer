@@ -6,11 +6,8 @@ namespace MagestyMediaPlayer.Core.Models
 {
     public class Playlist
     {
-        [Key]
         public Guid Id { get; set; }
 
-        [Required]
-        [StringLength(100)] 
         public string Name { get; set; }
 
         public string Description { get; set; }

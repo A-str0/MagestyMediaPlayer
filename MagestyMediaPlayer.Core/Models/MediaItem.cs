@@ -21,21 +21,18 @@ namespace MagestyMediaPlayer.Core.Models
 
     public class MediaItem
     {
-        [Key]
         public Guid Id { get; set; }
 
-        [Required] 
-        [StringLength(200)] public string Title { get; set; }
-        [StringLength(100)] public string Artist { get; set; }
-        [StringLength(100)] public string Album { get; set; }
-        [StringLength(50)] public string Genre { get; set; }
+        public string Title { get; set; }
+        public string Artist { get; set; }
+        public string Album { get; set; }
+        public string Genre { get; set; }
 
         public TimeSpan? Duration { get; set; }
         public uint Year { get; set; }
 
-        [StringLength(500)] public string SourceUri { get; set; }
-        [StringLength(200)] public string FileName { get; set; }
-
+        public string SourceUri { get; set; }
+        public string FileName { get; set; }
 
         public MediaType MediaType { get; set; }
         public SourceType SourceType { get; set; }
