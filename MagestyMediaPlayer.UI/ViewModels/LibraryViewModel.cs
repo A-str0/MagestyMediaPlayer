@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MagestyMediaPlayer.Core.Interfaces;
 using MagestyMediaPlayer.Core.Models;
+using MagestyMediaPlayer.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 
@@ -16,7 +17,7 @@ namespace MagestyMediaPlayer.UI.ViewModels
     public class LibraryViewModel : ViewModelBase
     {
         private readonly IMediaPlaybackService _mediaPlaybackService;
-        private readonly IMediaRepository _mediaRepository;
+        private readonly LocalMediaRepository _localMediaRepository;
 
         private ObservableCollection<MediaItemViewModel> _items;
         public ObservableCollection<MediaItemViewModel> Items
@@ -32,7 +33,7 @@ namespace MagestyMediaPlayer.UI.ViewModels
             IServiceProvider serviceProvider = Program.Services.CreateScope().ServiceProvider;
 
             _mediaPlaybackService = serviceProvider.GetRequiredService<IMediaPlaybackService>();
-            _mediaRepository = serviceProvider.GetRequiredService<IMediaRepository>();
+            _localMediaRepository = serviceProvider.GetRequiredService<IMediaRepository>() as LocalMediaRepository;
 
             PlayCommand = ReactiveCommand.CreateFromTask<MediaItemViewModel>(PlayAsync);
 
@@ -45,7 +46,13 @@ namespace MagestyMediaPlayer.UI.ViewModels
         {
             Debug.WriteLine("Loading library...");
 
-            foreach (var item in await _mediaRepository.GetAllAsync())
+            foreach (var file in _localMediaRepository.SearchLocalFiles("", "101"))
+            {
+                MediaItem mediaItem = _localMediaRepository.CreateMediaItemFromFile(file);
+                await _localMediaRepository.AddMediaItemAsync(mediaItem);
+            }
+
+            foreach (var item in await _localMediaRepository.GetAllAsync())
             {
                 Debug.WriteLine($"MediaItem {item.Title} loaded");
                 Items.Add(new MediaItemViewModel(item));
