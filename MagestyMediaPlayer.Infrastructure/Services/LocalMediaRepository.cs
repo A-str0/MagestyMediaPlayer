@@ -93,7 +93,7 @@ namespace MagestyMediaPlayer.Infrastructure.Services
             return await _context.MediaItems.FirstOrDefaultAsync(m => m.Id == id && m.SourceType == SourceType.Local);
         }
 
-        private IEnumerable<string> SearchLocalFiles(string query, string category)
+        public IEnumerable<string> SearchLocalFiles(string query, string category)
         {
             var extensions = category == "101" ? new[] { ".mp3", ".flac" } : new[] { ".mp4", ".mkv" };
             var files = new List<string>();
@@ -112,7 +112,7 @@ namespace MagestyMediaPlayer.Infrastructure.Services
             return files;
         }
 
-        private MediaItem CreateMediaItemFromFile(string filePath)
+        public MediaItem CreateMediaItemFromFile(string filePath)
         {
             if (!File.Exists(filePath))
                 throw new Exception($"File does not exists: {filePath}!");
