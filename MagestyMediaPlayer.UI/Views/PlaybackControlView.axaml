@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MagestyMediaPlayer.UI.Views.PlaybackControlView">
+	<Grid Grid.Row="1" Margin="10" Background="Black">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="0.3*"/>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="0.3*"/>
+		</Grid.ColumnDefinitions>
+
+		<!-- Media data -->
+		<StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0">
+			<TextBlock Text="Название трека" Foreground="White" FontSize="16"/>
+			<TextBlock Text="Артист" Foreground="White" FontSize="12"/>
+		</StackPanel>
+
+		<!-- Media control -->
+		<StackPanel Grid.Column="1"
+					Orientation="Horizontal"
+					VerticalAlignment="Center"
+					HorizontalAlignment="Center"
+					Spacing="10">
+			<Button Background="White">
+				<TextBlock Text="-"/>
+			</Button>
+			<Button Background="White">
+				<TextBlock Text="||"/>
+			</Button>
+			<Button Background="White">
+				<TextBlock Text="+"/>
+			</Button>
+			<Slider Width="250" Background="Red"/>
+		</StackPanel>
+
+		<!-- Settings -->
+		<StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+			<Button Margin="4,0" Background="White">
+				<TextBlock Text="Volume"/>
+			</Button>
+		</StackPanel>
+	</Grid>
+</UserControl>

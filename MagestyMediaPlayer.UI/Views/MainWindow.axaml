@@ -1,13 +1,16 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:MagestyMediaPlayer.ViewModels"
+        xmlns:vm="using:MagestyMediaPlayer.UI.ViewModels"
+		xmlns:views="using:MagestyMediaPlayer.UI.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="MagestyMediaPlayer.Views.MainWindow"
+        x:Class="MagestyMediaPlayer.UI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="MagestyMediaPlayer">
+        Title="MagestyMediaPlayer.UI"
+		TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -15,6 +18,20 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+	<Grid Background="Black">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="auto"/>
+		</Grid.RowDefinitions>
+		
+		<!-- Library list-->
+		<views:LibraryView Grid.Row="0" Background="Gray"/>
+		
+		<!-- Playback Control Panel -->
+		<views:PlaybackControlView Grid.Row="1">
+			
+		</views:PlaybackControlView>
+		
+	</Grid>
 
 </Window>

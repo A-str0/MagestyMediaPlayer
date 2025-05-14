@@ -1,0 +1,15 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MagestyMediaPlayer.UI.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MagestyMediaPlayer.UI.Views.MediaItemView"
+			 x:DataType="vm:MediaItemViewModel">
+	<StackPanel Spacing="5" Background="Black">
+		<StackPanel Spacing="5" Width="200">
+			<TextBlock HorizontalAlignment="Center" Text="{Binding Title}" Foreground="White"/>
+			<TextBlock HorizontalAlignment="Center" Text="{Binding Artist}" Foreground="White"/>
+		</StackPanel>
+	</StackPanel>
+</UserControl>
