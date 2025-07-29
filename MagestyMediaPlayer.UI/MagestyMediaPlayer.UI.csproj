@@ -6,8 +6,8 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-	<AssemblyName>MagestyMediaPlayer.UI</AssemblyName>
-	<RootNamespace>MagestyMediaPlayer.UI</RootNamespace>
+	  <AssemblyName>MagestyMediaPlayer.UI</AssemblyName>
+	  <RootNamespace>MagestyMediaPlayer.UI</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

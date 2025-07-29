@@ -11,7 +11,7 @@ namespace MagestyMediaPlayer.Infrastructure.Services
 {
     public class MediaPlaybackService : IMediaPlaybackService, IDisposable
     {
-        private readonly LibVLC _vlc = new LibVLC();
+        private readonly LibVLC _vlc;
         private readonly MediaPlayer _mediaPlayer;
 
         private LoopMode _loopMode;
@@ -26,6 +26,8 @@ namespace MagestyMediaPlayer.Infrastructure.Services
 
         public MediaPlaybackService()
         {
+            LibVLCSharp.Shared.Core.Initialize();
+            _vlc = new LibVLC();
             _mediaPlayer = new MediaPlayer(_vlc);
 
             //_mediaPlayer.EndReached += 
