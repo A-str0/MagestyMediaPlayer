@@ -10,5 +10,6 @@ namespace MagestyMediaPlayer.Core.Interfaces
     public interface IMediaPlaybackService
     {
         public abstract void NextMediaItem();
+        public abstract Task PlayAsync(MediaItem mediaItem);
     }
 }
