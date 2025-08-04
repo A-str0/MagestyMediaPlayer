@@ -10,7 +10,7 @@ namespace MagestyMediaPlayer.Core.Services
 
         public event EventHandler<PlaybackQueueChangedEventArgs<T>>? Changed;
 
-        public T CurrentItem => _currentItem.Value; // TODO: maybe ValueRef???
+        public T? CurrentItem => _currentItem.Value; // TODO: maybe ValueRef???
 
         public PlaybackQueue()
         {
