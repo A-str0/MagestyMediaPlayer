@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using ZLinq;
 using MagestyMediaPlayer.Core.Interfaces;
 using MagestyMediaPlayer.Core.Models;
 using MagestyMediaPlayer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using MonoTorrent;
-using MonoTorrent.Client;
 
 namespace MagestyMediaPlayer.Infrastructure.Services
 {
@@ -34,9 +25,11 @@ namespace MagestyMediaPlayer.Infrastructure.Services
 
         public async Task AddMediaItemAsync(MediaItem mediaItem)
         {
+            Debug.WriteLine($"Adding MediaItem {mediaItem.Id} to DB");
+
             if (mediaItem.SourceType != SourceType.Local || !File.Exists(mediaItem.SourceUri))
                 throw new ArgumentException("Invalid local file path");
-            
+
             using var context = _contextFactory.CreateDbContext();
 
             var existing = await context.MediaItems
@@ -54,6 +47,10 @@ namespace MagestyMediaPlayer.Infrastructure.Services
                 await context.SaveChangesAsync();
 
                 Debug.WriteLine($"{mediaItem.FileName} was added to DB");
+            }
+            else
+            {
+                Debug.WriteLine($"MediaItem {mediaItem} exists: {existing}");
             }
         }
 
