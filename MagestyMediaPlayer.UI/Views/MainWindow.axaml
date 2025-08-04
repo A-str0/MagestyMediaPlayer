@@ -24,7 +24,7 @@
 			<RowDefinition Height="auto"/>
 		</Grid.RowDefinitions>
 		
-		<!-- Library list-->
+		<!-- Library list  -->
 		<views:LibraryView x:Name="LibraryView" Grid.Row="0" Background="Gray"/>
 		
 		<!-- Playback Control Panel -->

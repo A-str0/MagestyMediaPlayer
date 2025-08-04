@@ -11,7 +11,7 @@ namespace MagestyMediaPlayer.UI.Views
             InitializeComponent();
 
             var serviceProvider = Program.Services;
-            DataContext = serviceProvider.GetRequiredService<MainWindowViewModel>();
+            // DataContext = serviceProvider.GetRequiredService<MainWindowViewModel>();
 
             var libraryView = this.FindControl<LibraryView>("LibraryView");
             if (libraryView != null)
