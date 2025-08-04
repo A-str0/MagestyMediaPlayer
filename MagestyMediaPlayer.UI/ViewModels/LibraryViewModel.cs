@@ -16,8 +16,8 @@ namespace MagestyMediaPlayer.UI.ViewModels
 {
     public class LibraryViewModel : ViewModelBase
     {
-        private readonly IMediaPlaybackService _mediaPlaybackService;
-        private readonly LocalMediaRepository _localMediaRepository;
+        private readonly MediaPlaybackService _mediaPlaybackService;
+        private readonly IMediaRepository _mediaRepository;
 
         private ObservableCollection<MediaItemViewModel> _items = new ObservableCollection<MediaItemViewModel>();
         public ObservableCollection<MediaItemViewModel> Items
@@ -26,18 +26,32 @@ namespace MagestyMediaPlayer.UI.ViewModels
             set => this.RaiseAndSetIfChanged(ref _items, value);
         }
 
+        private MediaItemViewModel? _selectedMediaItem;
+        public MediaItemViewModel? SelectedMediaItem
+        {
+            get => _selectedMediaItem;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _selectedMediaItem, value);
+                if (_selectedMediaItem != null)
+                {
+                    PlayCommand.Execute(_selectedMediaItem).Subscribe();
+                }
+            }
+        }
+
         public ReactiveCommand<MediaItemViewModel, Unit> PlayCommand;
 
         public LibraryViewModel()
         {
             IServiceProvider serviceProvider = Program.Services.CreateScope().ServiceProvider;
 
-            _mediaPlaybackService = serviceProvider.GetRequiredService<IMediaPlaybackService>();
-            _localMediaRepository = serviceProvider.GetRequiredService<IMediaRepository>() as LocalMediaRepository;
+            _mediaPlaybackService = serviceProvider.GetRequiredService<MediaPlaybackService>();
+            _mediaRepository = serviceProvider.GetRequiredService<IMediaRepository>();
 
             PlayCommand = ReactiveCommand.CreateFromTask<MediaItemViewModel>(PlayAsync);
 
-            Task.Run(async () => await LoadLibraryAsync());
+            Task.Run(LoadLibraryAsync);
         }
 
         public async Task PlayAsync(MediaItemViewModel mediaItemViewModel) => await _mediaPlaybackService.PlayAsync(mediaItemViewModel.MediaItem);
@@ -46,19 +60,25 @@ namespace MagestyMediaPlayer.UI.ViewModels
         {
             Debug.WriteLine("Loading library...");
 
-            foreach (var file in _localMediaRepository.SearchLocalFiles("", "101"))
+            // TODO: delete cast
+            foreach (var file in (_mediaRepository as LocalMediaRepository).SearchLocalFiles("", "101"))
             {
-                MediaItem mediaItem = _localMediaRepository.CreateMediaItemFromFile(file);
-                await _localMediaRepository.AddMediaItemAsync(mediaItem);
+
+                MediaItem mediaItem = (_mediaRepository as LocalMediaRepository).CreateMediaItemFromFile(file);
+
+                await _mediaRepository.AddMediaItemAsync(mediaItem);
             }
 
-            foreach (var item in await _localMediaRepository.GetAllAsync())
+            foreach (var item in await _mediaRepository.GetAllAsync())
             {
-                Debug.WriteLine($"MediaItem {item.Title} loaded");
+                if (item == null)
+                    continue;
+
+                Debug.WriteLine($"{this}: MediaItem {item.Title} loaded", "debug");
                 Items.Add(new MediaItemViewModel(item));
             }
 
-            Debug.WriteLine("Library loaded");
+            Debug.WriteLine($"{this}: Library loaded", "debug");
         }
     }
 }

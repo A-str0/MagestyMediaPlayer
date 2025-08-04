@@ -10,42 +10,38 @@ using MagestyMediaPlayer.Core.Services;
 
 namespace MagestyMediaPlayer.Infrastructure.Services
 {
-    public class MediaPlaybackService : IMediaPlaybackService, IDisposable
+    public class MediaPlaybackService : IDisposable
     {
+        private readonly static PlaybackQueue<MediaItem> _queue = new PlaybackQueue<MediaItem>();
+
         private readonly LibVLC _vlc;
         private readonly MediaPlayer _mediaPlayer;
 
-        private PlaybackQueue<MediaItem> _queue;
-
         public MediaPlayer MediaPlayer => _mediaPlayer;
+
+        public MediaItem? CurrentQueueItem => _queue.CurrentItem;
+        public Media? CurrentPlayingMedia => _mediaPlayer.Media;
+
 
         public MediaPlaybackService()
         {
             LibVLCSharp.Shared.Core.Initialize();
+
             _vlc = new LibVLC();
             _mediaPlayer = new MediaPlayer(_vlc);
-            _queue = new PlaybackQueue<MediaItem>();
 
-            //_mediaPlayer.EndReached += 
+            // _queue.Changed += OnQueueChanged;
         }
 
-        public void NextMediaItem()
+        public async Task PlayAsync(MediaItem mediaItem)
         {
-            _queue.ToNext();
-        }
+            _queue.AddNext(mediaItem);
 
-        public void AddMediaItems(ICollection<MediaItem> items)
-        {
-            foreach (MediaItem item in items)
+            await Task.Run(() =>
             {
-                _queue.AddLast(item);
-            }
-        }
-
-        // TEMP!!!
-        public void CreateQueue(ICollection<MediaItem> items)
-        {
-            AddMediaItems(items);
+                Media media = new Media(_vlc, mediaItem.SourceUri);
+                _mediaPlayer.Play(media);
+            });
         }
 
         public void Dispose()

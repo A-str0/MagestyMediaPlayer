@@ -13,7 +13,7 @@ namespace MagestyMediaPlayer.Core.Interfaces
         public Task DeleteMediaItemAsync(MediaItem item);
         public Task DeleteMediaItemAsync(Guid id);
         public Task UpdateAsync(MediaItem mediaItem);
-        public Task<MediaItem> GetByIdAsync(Guid id);
-        public Task<IEnumerable<MediaItem>> GetAllAsync();
+        public Task<MediaItem?> GetByIdAsync(Guid id);
+        public Task<IEnumerable<MediaItem?>> GetAllAsync();
     }
 }

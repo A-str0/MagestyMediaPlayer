@@ -5,6 +5,7 @@ using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using MagestyMediaPlayer.Core.Interfaces;
+using MagestyMediaPlayer.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 
@@ -12,7 +13,7 @@ namespace MagestyMediaPlayer.UI.ViewModels
 {
     public class PlaybackControlViewModel : ViewModelBase
     {
-        private readonly IMediaPlaybackService _mediaPlaybackService;
+        private readonly MediaPlaybackService _mediaPlaybackService;
 
         public ReactiveCommand<Unit, Unit> PlayPauseCommand;
         public ReactiveCommand<Unit, Unit> NextCommand;
@@ -23,15 +24,15 @@ namespace MagestyMediaPlayer.UI.ViewModels
         {
             IServiceProvider serviceProvider = Program.Services.CreateScope().ServiceProvider;
 
-            _mediaPlaybackService = serviceProvider.GetRequiredService<IMediaPlaybackService>();
+            _mediaPlaybackService = serviceProvider.GetRequiredService<MediaPlaybackService>();
 
             PlayPauseCommand = ReactiveCommand.Create(PlayPause);
             NextCommand = ReactiveCommand.CreateFromTask(NextAsync);
             PreviousCommand = ReactiveCommand.CreateFromTask(PreviousAsync);
         }
 
-        public void PlayPause() => _mediaPlaybackService?.PlayPause();
-        public async Task NextAsync() => await _mediaPlaybackService.NextAsync();
-        public async Task PreviousAsync() => await _mediaPlaybackService.PreviousAsync();
+        public void PlayPause() => Console.WriteLine("play :|"); //_mediaPlaybackService?.PlayPause();
+        public async Task NextAsync() => Console.WriteLine("next :)"); //await _mediaPlaybackService.NextAsync();
+        public async Task PreviousAsync() => Console.WriteLine("prev :()"); //await _mediaPlaybackService.PreviousAsync();
     }
 }

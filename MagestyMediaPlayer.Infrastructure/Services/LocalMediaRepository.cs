@@ -20,7 +20,7 @@ namespace MagestyMediaPlayer.Infrastructure.Services
             [
                 Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
                 Environment.GetFolderPath(Environment.SpecialFolder.MyVideos)
-            ];
+            ]; // TODO: make it customizable
         }
 
         public async Task AddMediaItemAsync(MediaItem mediaItem)
@@ -90,20 +90,20 @@ namespace MagestyMediaPlayer.Infrastructure.Services
             await context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<MediaItem>> GetAllAsync()
+        public async Task<MediaItem?> GetByIdAsync(Guid id)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            return await context.MediaItems.FirstOrDefaultAsync(m => m.Id == id && m.SourceType == SourceType.Local);
+        }
+
+        public async Task<IEnumerable<MediaItem?>> GetAllAsync()
         {
             using var context = _contextFactory.CreateDbContext();
 
             return await context.MediaItems
                 .Where(m => m.SourceType == SourceType.Local)
                 .ToListAsync();
-        }
-
-        public async Task<MediaItem> GetByIdAsync(Guid id)
-        {
-            using var context = _contextFactory.CreateDbContext();
-
-            return await context.MediaItems.FirstOrDefaultAsync(m => m.Id == id && m.SourceType == SourceType.Local);
         }
 
         public IEnumerable<string> SearchLocalFiles(string query, string category)
@@ -114,7 +114,10 @@ namespace MagestyMediaPlayer.Infrastructure.Services
             foreach (var path in _searchPaths)
             {
                 if (!Directory.Exists(path))
+                {
+                    Debug.WriteLine($"{this}: Directory \'{path}\' does not exists!", "warn");
                     continue;
+                }
 
                 files.AddRange(Directory
                     .EnumerateFiles(path, "*.*", SearchOption.AllDirectories)
@@ -149,11 +152,11 @@ namespace MagestyMediaPlayer.Infrastructure.Services
                 mediaItem.Album = file.Tag.Album;
                 mediaItem.Genre = file.Tag.FirstGenre;
                 mediaItem.Duration = file.Properties.Duration;
-                mediaItem.Year = (file.Tag.Year > 0 ? file.Tag.Year : (uint)DateTime.Now.Year);
+                mediaItem.Year = file.Tag.Year > 0 ? file.Tag.Year : (uint)DateTime.Now.Year;
             }
             catch
             {
-                Debug.WriteLine($"Cannot reach the file: {filePath}");
+                Debug.WriteLine($"{this}: Cannot reach the file: {filePath}", "warn");
             }
 
             return mediaItem;
