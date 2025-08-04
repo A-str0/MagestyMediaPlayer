@@ -13,7 +13,7 @@ namespace MagestyMediaPlayer.Infrastructure.Data
         {
             Console.WriteLine("Configuring ", this);
 
-            // TODO: разделить для разных ОС
+            // TODO: do directory auto-creation
             string dbPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "MagestyMediaPlayer",
