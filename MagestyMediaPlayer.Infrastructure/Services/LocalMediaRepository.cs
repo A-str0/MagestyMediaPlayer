@@ -97,7 +97,7 @@ namespace MagestyMediaPlayer.Infrastructure.Services
             return await context.MediaItems.FirstOrDefaultAsync(m => m.Id == id && m.SourceType == SourceType.Local);
         }
 
-        public async Task<IEnumerable<MediaItem?>> GetAllAsync()
+        public async Task<IEnumerable<MediaItem>> GetAllAsync()
         {
             using var context = _contextFactory.CreateDbContext();
 

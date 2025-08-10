@@ -37,6 +37,7 @@ namespace MagestyMediaPlayer.UI
             services.AddSingleton<PlaybackControlViewModel>();
 
             services.AddSingleton<IMediaRepository, LocalMediaRepository>();
+            services.AddSingleton<IPlaylistRepository, PlaylistRepository>();
             services.AddSingleton<MediaPlaybackService>();
 
             Services = services.BuildServiceProvider();

@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
+using ZLinq;
 using System.Reactive;
-using System.Text;
 using System.Threading.Tasks;
 using MagestyMediaPlayer.Core.Interfaces;
 using MagestyMediaPlayer.Core.Models;
@@ -18,6 +17,7 @@ namespace MagestyMediaPlayer.UI.ViewModels
     {
         private readonly MediaPlaybackService _mediaPlaybackService;
         private readonly IMediaRepository _mediaRepository;
+        private readonly IPlaylistRepository _playlistRepository;
 
         private ObservableCollection<MediaItemViewModel> _items = new ObservableCollection<MediaItemViewModel>();
         public ObservableCollection<MediaItemViewModel> Items
@@ -48,6 +48,7 @@ namespace MagestyMediaPlayer.UI.ViewModels
 
             _mediaPlaybackService = serviceProvider.GetRequiredService<MediaPlaybackService>();
             _mediaRepository = serviceProvider.GetRequiredService<IMediaRepository>();
+            _playlistRepository = serviceProvider.GetRequiredService<IPlaylistRepository>();
 
             PlayCommand = ReactiveCommand.CreateFromTask<MediaItemViewModel>(PlayAsync);
 
@@ -58,16 +59,29 @@ namespace MagestyMediaPlayer.UI.ViewModels
     
         private async Task LoadLibraryAsync()
         {
-            Debug.WriteLine("Loading library...");
+            Debug.WriteLine($"{this}: Loading library...", "debug");
 
             // TODO: delete cast
             foreach (var file in (_mediaRepository as LocalMediaRepository).SearchLocalFiles("", "101"))
             {
-
                 MediaItem mediaItem = (_mediaRepository as LocalMediaRepository).CreateMediaItemFromFile(file);
-
                 await _mediaRepository.AddMediaItemAsync(mediaItem);
             }
+
+            // TODO: move this
+            Playlist? playlist = (await _playlistRepository.GetAllPlaylistsAsync())
+                .AsValueEnumerable()
+                .FirstOrDefault(p => p.Name == "Library");
+            IEnumerable<Guid> mediaItemIds = (await _mediaRepository.GetAllAsync())
+                .AsValueEnumerable()
+                .Select(item => item.Id)
+                .ToList();
+
+            Debug.WriteLine($"{this}: Created IEnumerable<Guid> {mediaItemIds}", "debug");
+
+            if (playlist == null)
+                playlist = await _playlistRepository.CreatePlaylistAsync("Library", "This is library");
+            await _playlistRepository.AddTracksToPlaylistAsync(playlist.Id, mediaItemIds);
 
             foreach (var item in await _mediaRepository.GetAllAsync())
             {

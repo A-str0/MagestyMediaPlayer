@@ -6,7 +6,7 @@ namespace MagestyMediaPlayer.Core.Models
 {
     public class Playlist
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } // TODO: generate Guid
 
         public string Name { get; set; }
 
