@@ -2,6 +2,11 @@
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public string Greeting { get; } = "Welcome to Avalonia!";
+        public PlaybackControlViewModel PlaybackControlViewModel { get; }
+
+        public MainWindowViewModel(PlaybackControlViewModel playbackControlViewModel)
+        {
+            PlaybackControlViewModel = playbackControlViewModel;
+        }
     }
 }

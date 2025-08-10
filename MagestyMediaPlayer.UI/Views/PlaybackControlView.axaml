@@ -2,8 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MagestyMediaPlayer.UI.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="MagestyMediaPlayer.UI.Views.PlaybackControlView">
+             x:Class="MagestyMediaPlayer.UI.Views.PlaybackControlView"
+			 x:DataType="vm:PlaybackControlViewModel">
+	
 	<Grid Grid.Row="1" Margin="10" Background="Black">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="0.3*"/>
@@ -23,14 +26,14 @@
 					VerticalAlignment="Center"
 					HorizontalAlignment="Center"
 					Spacing="10">
-			<Button Background="White">
-				<TextBlock Text="-"/>
+			<Button Background="Red" Foreground="White" Command="{CompiledBinding PreviousCommand}" IsEnabled="True">
+				<TextBlock Text="-" Foreground="White"/>
 			</Button>
-			<Button Background="White">
-				<TextBlock Text="||"/>
+			<Button Background="Red" Foreground="White" Command="{CompiledBinding PlayPauseCommand}" IsEnabled="True">
+				<TextBlock Text="||" Foreground="White"/>
 			</Button>
-			<Button Background="White">
-				<TextBlock Text="+"/>
+			<Button Background="Red" Foreground="White" Command="{CompiledBinding NextCommand}" IsEnabled="True">
+				<TextBlock Text="+" Foreground="White"/>
 			</Button>
 			<Slider Width="250" Background="Red"/>
 		</StackPanel>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Text;
@@ -15,9 +16,9 @@ namespace MagestyMediaPlayer.UI.ViewModels
     {
         private readonly MediaPlaybackService _mediaPlaybackService;
 
-        public ReactiveCommand<Unit, Unit> PlayPauseCommand;
-        public ReactiveCommand<Unit, Unit> NextCommand;
-        public ReactiveCommand<Unit, Unit> PreviousCommand;
+        public ReactiveCommand<Unit, Unit> PlayPauseCommand { get; }
+        public ReactiveCommand<Unit, Unit> NextCommand { get; }
+        public ReactiveCommand<Unit, Unit> PreviousCommand { get; }
 
 
         public PlaybackControlViewModel()
@@ -31,8 +32,8 @@ namespace MagestyMediaPlayer.UI.ViewModels
             PreviousCommand = ReactiveCommand.CreateFromTask(PreviousAsync);
         }
 
-        public void PlayPause() => Console.WriteLine("play :|"); //_mediaPlaybackService?.PlayPause();
-        public async Task NextAsync() => Console.WriteLine("next :)"); //await _mediaPlaybackService.NextAsync();
-        public async Task PreviousAsync() => Console.WriteLine("prev :()"); //await _mediaPlaybackService.PreviousAsync();
+        public void PlayPause() => Debug.WriteLine("play :|"); //_mediaPlaybackService?.PlayPause();
+        public async Task NextAsync() => await _mediaPlaybackService.PlayNextAsync(); //await _mediaPlaybackService.NextAsync();
+        public async Task PreviousAsync() => Debug.WriteLine("prev :()"); //await _mediaPlaybackService.PreviousAsync();
     }
 }

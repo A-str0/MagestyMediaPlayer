@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,6 +43,19 @@ namespace MagestyMediaPlayer.Infrastructure.Services
                 Media media = new Media(_vlc, mediaItem.SourceUri);
                 _mediaPlayer.Play(media);
             });
+        }
+
+        public async Task PlayNextAsync()
+        {
+            _queue.ToNext();
+
+            if (_queue.CurrentItem == null)
+            {
+                Debug.WriteLine($"{this}: Next MediaItem in queue is Null :(", "debug");
+                return;
+            }
+
+            await PlayAsync(_queue.CurrentItem);
         }
 
         public void Dispose()

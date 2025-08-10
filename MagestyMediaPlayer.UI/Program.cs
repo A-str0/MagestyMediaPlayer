@@ -13,7 +13,7 @@ namespace MagestyMediaPlayer.UI
 {
     internal sealed class Program
     {
-        public static ServiceProvider Services { get; private set; }
+        public static IServiceProvider Services { get; private set; }
 
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -34,6 +34,7 @@ namespace MagestyMediaPlayer.UI
 
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<LibraryViewModel>();
+            services.AddSingleton<PlaybackControlViewModel>();
 
             services.AddSingleton<IMediaRepository, LocalMediaRepository>();
             services.AddSingleton<MediaPlaybackService>();
