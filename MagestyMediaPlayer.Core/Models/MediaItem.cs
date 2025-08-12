@@ -22,7 +22,7 @@ namespace MagestyMediaPlayer.Core.Models
 
     public class MediaItem
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         public string Title { get; set; }
         public string? Artist { get; set; }

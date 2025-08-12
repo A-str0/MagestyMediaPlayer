@@ -4,7 +4,7 @@ namespace MagestyMediaPlayer.Core.Models
 {
     public class PlaylistItem
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         public Guid PlaylistId { get; set; }
         public virtual Playlist Playlist { get; set; }
