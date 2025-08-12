@@ -1,107 +1,126 @@
-using MagestyMediaPlayer.Core.Interfaces;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using MagestyMediaPlayer.Core.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MagestyMediaPlayer.Core.Services
 {
-    public class PlaybackQueue<T> : IDisposable
+    public class PlaybackQueue : INotifyCollectionChanged, IDisposable
     {
-        private readonly LinkedList<T> _container = new LinkedList<T>();
-        private LinkedListNode<T>? _currentItem;
+        private readonly List<MediaItem> _container = new();
+        private int _currentIndex = -1;
+        private readonly IMemoryCache _cache;
+        private readonly int _maxSize;
 
-        public event EventHandler<PlaybackQueueChangedEventArgs<T>>? Changed;
+        public event NotifyCollectionChangedEventHandler? CollectionChanged;
+        public event EventHandler<MediaItem?>? CurrentItemChanged;
 
-        public T? CurrentItem
+        public MediaItem? Current => _currentIndex >= 0 && _currentIndex < _container.Count ? _container[_currentIndex] : null;
+        public IReadOnlyList<MediaItem> Items => _container.AsReadOnly();
+        public bool HasNext => _currentIndex + 1 < _container.Count;
+        public bool HasPrevious => _currentIndex > 0;
+
+        public PlaybackQueue(IMemoryCache cache, int maxSize = 500)
         {
-            get
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            _maxSize = maxSize;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddLast(MediaItem item)
+        {
+            if (_container.Count >= _maxSize)
             {
-                if (_currentItem != null)
-                    return _currentItem.Value; // TODO: maybe ValueRef???
-
-                return default;
-            }
-        }
-
-        public PlaybackQueue() { }
-
-        public void Initialize(IEnumerable<T> items, bool shuffle = false)
-        {
-            _container.Clear();
-            _currentItem = null;
-
-            foreach (T item in items)
-                _container.AddLast(item);
-
-            if (shuffle)
-                Shuffle();
-
-            _currentItem = _container.First;
-        }
-
-        public void AddLast(T item)
-        {
-            _container.AddLast(item);
-            Changed?.Invoke(this, new PlaybackQueueChangedEventArgs<T>() { Value = item });
-        }
-
-        public void AddNext(T item)
-        {
-            if (_currentItem == null)
-            {
-                Console.WriteLine($"{this}: Current Item Node is null");
-
-                AddLast(item);
-
+                Debug.WriteLine($"{this}: Container size is already maximum {_container.Count}", "debug");
                 return;
             }
 
-            _container.AddAfter(_currentItem, item);
-            Changed?.Invoke(this, new PlaybackQueueChangedEventArgs<T>() { Value = item });
+            _container.Add(item);
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, _container.Count - 1));
         }
 
-
-        public void ToNext()
+        public void AddNext(MediaItem item)
         {
-            if (_currentItem == null)
+            if (_container.Count >= _maxSize)
             {
-                Console.WriteLine($"{this}: Current Item Node is null");
-
+                Debug.WriteLine($"{this}: Container size is already maximum {_container.Count}", "debug");
                 return;
             }
 
-            _currentItem = _currentItem.Next;
-            Changed?.Invoke(this, new PlaybackQueueChangedEventArgs<T>() { Value = _currentItem.Value });
+            int insertIndex = Math.Clamp(_currentIndex + 1, 0, _maxSize);
+            _container.Insert(insertIndex, item);
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, insertIndex));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void MoveNext()
+        {
+            if (!HasNext)
+            {
+                Debug.WriteLine($"{this}: There is no Next Item in container", "debug");
+                return;
+            }
+
+            _currentIndex++;
+            CurrentItemChanged?.Invoke(this, Current);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void MovePrevious()
+        {
+            if (!HasPrevious)
+            {
+                Debug.WriteLine($"{this}: There is no Previous Item in container", "debug");
+                return;
+            }
+
+            _currentIndex--;
+            CurrentItemChanged?.Invoke(this, Current);
         }
 
         public void Shuffle()
         {
             if (_container.Count <= 1)
                 return;
-
+            
             var random = new Random();
-            var items = _container.ToList();
-            _container.Clear();
-            while (items.Count > 0)
+
+            for (int i = _container.Count - 1; i > 0; i--)
             {
-                int index = random.Next(items.Count);
-                _container.AddLast(items[index]);
-                items.RemoveAt(index);
+                int j = random.Next(i + 1);
+                (_container[i], _container[j]) = (_container[j], _container[i]);
+                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, _container[i], i, j));
             }
 
-            _currentItem = _container.First;
-            Changed?.Invoke(this, new PlaybackQueueChangedEventArgs<T>() { Value = _currentItem.Value });
+            if (_currentIndex >= 0)
+                _currentIndex = Current != null ? _container.IndexOf(Current) : 0;
+            
+            CurrentItemChanged?.Invoke(this, Current);
         }
 
-        public IEnumerable<T> GetAllItems() => _container.ToList();
+        public void Clear()
+        {
+            _container.Clear();
+            _currentIndex = -1;
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            CurrentItemChanged?.Invoke(this, null);
+        }
+
+        // TODO
+        // public async Task InitializeAsync(QueueSourceType sourceType, AppDbContext context, Guid? sourceId = null, Guid? selectedId = null, bool shuffle = false)
+        // {
+        //     var factory = new QueueFactory(context);
+        //     var strategy = factory.Create(sourceType, sourceId);
+        //     await strategy.GenerateAsync(this, selectedId, shuffle);
+        // }
 
         public void Dispose()
         {
-            _container.Clear();
-            _currentItem = null;
-            Changed = null;
+            Clear();
+
+            CollectionChanged = null;
+            CurrentItemChanged = null;
         }
-    }
-    
-    public class PlaybackQueueChangedEventArgs<T> : EventArgs
-    {
-        public T? Value { get; set; }
     }
 }
