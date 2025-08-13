@@ -13,17 +13,19 @@ namespace MagestyMediaPlayer.Infrastructure.Services
 {
     public class MediaPlaybackService : IDisposable
     {
-        private readonly static PlaybackQueue<MediaItem> _queue = new PlaybackQueue<MediaItem>();
 
         private readonly LibVLC _vlc;
         private readonly MediaPlayer _mediaPlayer;
+        // private readonly IMemoryCache _cache;
+        private readonly PlaybackQueue _queue;
 
         public MediaPlayer MediaPlayer => _mediaPlayer;
 
-        public MediaItem? CurrentQueueItem => _queue.CurrentItem;
+        public MediaItem? CurrentQueueItem => _queue.Current;
         public Media? CurrentPlayingMedia => _mediaPlayer.Media;
 
 
+        // public MediaPlaybackService(IMemoryCache cache)
         public MediaPlaybackService()
         {
             LibVLCSharp.Shared.Core.Initialize();
@@ -31,15 +33,19 @@ namespace MagestyMediaPlayer.Infrastructure.Services
             _vlc = new LibVLC();
             _mediaPlayer = new MediaPlayer(_vlc);
 
-            // _queue.Changed += OnQueueChanged;
+            // _cache = cache;
+            _queue = new PlaybackQueue();
+
+            _queue.CurrentItemChanged += async (s, e) => await OnCurrentItemChanged(e);
         }
 
-        public async Task PlayAsync(MediaItem mediaItem)
+        public async Task PlayAsync(MediaItem? mediaItem)
         {
-            _queue.AddNext(mediaItem);
+            if (mediaItem == null) return;
 
             await Task.Run(() =>
             {
+                // TODO: move
                 Media media = new Media(_vlc, mediaItem.SourceUri);
                 _mediaPlayer.Play(media);
             });
@@ -47,15 +53,37 @@ namespace MagestyMediaPlayer.Infrastructure.Services
 
         public async Task PlayNextAsync()
         {
-            _queue.ToNext();
+            _queue.MoveNext();
 
-            if (_queue.CurrentItem == null)
+            await PlayAsync(_queue.Current);
+        }
+
+        private async Task OnCurrentItemChanged(MediaItem? item)
+        {
+            // if (item == null && _queue.Current != null)
+            // {
+            //     if (item != null)
+            //         _cache.Set(item.Id, item, new MemoryCacheEntryOptions
+            //         {
+            //             SlidingExpiration = TimeSpan.FromMinutes(10),
+            //             Size = 1024 // ~1 КБ на MediaItem
+            //         });
+            // }
+            if (item != null)
             {
-                Debug.WriteLine($"{this}: Next MediaItem in queue is Null :(", "debug");
-                return;
+                using var media = new Media(_vlc, item.SourceUri);
+                await Task.Run(() => _mediaPlayer.Play(media));
             }
+            else
+            {
+                _mediaPlayer.Stop();
+            }
+        }
 
-            await PlayAsync(_queue.CurrentItem);
+        // TODO: change or delete
+        public void InitializeQueue(IEnumerable<MediaItem> items, MediaItem? selectedItem = null, bool shuffle = false)
+        {
+            _queue.Initialize(items, selectedItem, shuffle);
         }
 
         public void Dispose()

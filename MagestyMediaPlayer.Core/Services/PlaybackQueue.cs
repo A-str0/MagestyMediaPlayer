@@ -1,6 +1,7 @@
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using MagestyMediaPlayer.Core.Models;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -10,7 +11,6 @@ namespace MagestyMediaPlayer.Core.Services
     {
         private readonly List<MediaItem> _container = new();
         private int _currentIndex = -1;
-        private readonly IMemoryCache _cache;
         private readonly int _maxSize;
 
         public event NotifyCollectionChangedEventHandler? CollectionChanged;
@@ -20,10 +20,10 @@ namespace MagestyMediaPlayer.Core.Services
         public IReadOnlyList<MediaItem> Items => _container.AsReadOnly();
         public bool HasNext => _currentIndex + 1 < _container.Count;
         public bool HasPrevious => _currentIndex > 0;
+        public int Count => _container.Count;
 
-        public PlaybackQueue(IMemoryCache cache, int maxSize = 500)
+        public PlaybackQueue(int maxSize = 500)
         {
-            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             _maxSize = maxSize;
         }
 
@@ -79,11 +79,27 @@ namespace MagestyMediaPlayer.Core.Services
             CurrentItemChanged?.Invoke(this, Current);
         }
 
+        public void Initialize(IEnumerable<MediaItem> items, MediaItem? selectedItem = null, bool shuffle = false)
+        {
+            _container.Clear();
+
+            foreach (var item in items)
+            {
+                AddLast(item);
+            }
+
+            _currentIndex = selectedItem == null ? 0 : _container.IndexOf(selectedItem);
+            CurrentItemChanged?.Invoke(this, Current);
+
+            if (shuffle)
+                Shuffle();
+        }
+
         public void Shuffle()
         {
             if (_container.Count <= 1)
                 return;
-            
+
             var random = new Random();
 
             for (int i = _container.Count - 1; i > 0; i--)
@@ -95,7 +111,7 @@ namespace MagestyMediaPlayer.Core.Services
 
             if (_currentIndex >= 0)
                 _currentIndex = Current != null ? _container.IndexOf(Current) : 0;
-            
+
             CurrentItemChanged?.Invoke(this, Current);
         }
 

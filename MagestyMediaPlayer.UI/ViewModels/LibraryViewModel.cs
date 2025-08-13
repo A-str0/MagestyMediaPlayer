@@ -55,7 +55,12 @@ namespace MagestyMediaPlayer.UI.ViewModels
             Task.Run(LoadLibraryAsync);
         }
 
-        public async Task PlayAsync(MediaItemViewModel mediaItemViewModel) => await _mediaPlaybackService.PlayAsync(mediaItemViewModel.MediaItem);
+        public async Task PlayAsync(MediaItemViewModel mediaItemViewModel)
+        {
+            _mediaPlaybackService.InitializeQueue(_items.AsValueEnumerable().Select(i => i.MediaItem).ToList(), mediaItemViewModel.MediaItem);
+
+            await _mediaPlaybackService.PlayAsync(_mediaPlaybackService.CurrentQueueItem);
+        }
     
         private async Task LoadLibraryAsync()
         {
