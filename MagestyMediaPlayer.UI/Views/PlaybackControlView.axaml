@@ -40,9 +40,20 @@
 
 		<!-- Settings -->
 		<StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-			<Button Margin="4,0" Background="White">
+			<Button x:Name="VolumeButton" Command="{CompiledBinding MuteCommand}" Margin="4,0" Background="White">
 				<TextBlock Text="Volume"/>
 			</Button>
 		</StackPanel>
+
+		<!-- Volume Popup -->
+		<Popup x:Name="VolumePopup"
+			WindowManagerAddShadowHint="False"
+			IsLightDismissEnabled="False"
+			PlacementTarget="{Binding #VolumeButton}"
+			Placement="Top">
+			<Border Background="#222" CornerRadius="6" Padding="6">
+				<Slider  Minimum="0" Value="{Binding Volume}" Maximum="120" Height="250" Orientation="Vertical"/>
+			</Border>
+		</Popup>
 	</Grid>
 </UserControl>

@@ -6,10 +6,12 @@ using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia.Threading;
+using Avalonia.Controls.Primitives;
 using MagestyMediaPlayer.Core.Interfaces;
 using MagestyMediaPlayer.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
+
 
 namespace MagestyMediaPlayer.UI.ViewModels
 {
@@ -17,17 +19,18 @@ namespace MagestyMediaPlayer.UI.ViewModels
     {
         private readonly MediaPlaybackService _mediaPlaybackService;
 
-        public string TrackTitle {
+        public string TrackTitle
+        {
             get
             {
-                return _mediaPlaybackService.CurrentQueueItem?.Title??"TITLE PLACEHOLDER";
+                return _mediaPlaybackService.CurrentQueueItem?.Title ?? "TITLE PLACEHOLDER";
             }
         }
         public string TrackArtist
         {
             get
             {
-                return _mediaPlaybackService.CurrentQueueItem?.Artist??"ARTIST PLACEHOLDER";
+                return _mediaPlaybackService.CurrentQueueItem?.Artist ?? "ARTIST PLACEHOLDER";
             }
         }
 
@@ -37,7 +40,7 @@ namespace MagestyMediaPlayer.UI.ViewModels
             get => _trackPosition;
             set
             {
-                if (Math.Abs(_trackPosition - value) > 0.001)
+                if (Math.Abs(_trackPosition - value) > 0)
                 {
                     _trackPosition = value;
                     this.RaiseAndSetIfChanged(ref _trackPosition, value);
@@ -50,9 +53,26 @@ namespace MagestyMediaPlayer.UI.ViewModels
             }
         }
 
+        private int _volume = 100;
+        public int Volume
+        {
+            get => _volume;
+            set
+            {
+                _volume = Convert.ToInt16(value);
+                this.RaiseAndSetIfChanged(ref _volume, value);
+
+                if (_mediaPlaybackService != null)
+                {
+                    _mediaPlaybackService.SetVolume(_volume);
+                }
+            }
+        }
+
         public ReactiveCommand<Unit, Unit> PlayPauseCommand { get; }
         public ReactiveCommand<Unit, Unit> NextCommand { get; }
         public ReactiveCommand<Unit, Unit> PreviousCommand { get; }
+        public ReactiveCommand<Unit, Unit> MuteCommand { get; }
 
         private readonly DispatcherTimer _progressTimer;
         private bool _updatingFromPlayer;
@@ -82,10 +102,13 @@ namespace MagestyMediaPlayer.UI.ViewModels
             PlayPauseCommand = ReactiveCommand.CreateFromTask(PlayPause);
             NextCommand = ReactiveCommand.CreateFromTask(NextAsync);
             PreviousCommand = ReactiveCommand.CreateFromTask(PreviousAsync);
+            MuteCommand = ReactiveCommand.Create(Mute);
         }
 
-        public async Task PlayPause() => await _mediaPlaybackService.PlayPauseAsync(); //_mediaPlaybackService?.PlayPause();
-        public async Task NextAsync() => await _mediaPlaybackService.PlayNextAsync(); //await _mediaPlaybackService.NextAsync();
-        public async Task PreviousAsync() => await _mediaPlaybackService.PlayPreviousAsync(); //await _mediaPlaybackService.PreviousAsync();
+        private async Task PlayPause() => await _mediaPlaybackService.PlayPauseAsync(); //_mediaPlaybackService?.PlayPause();
+        private async Task NextAsync() => await _mediaPlaybackService.PlayNextAsync(); //await _mediaPlaybackService.NextAsync();
+        private async Task PreviousAsync() => await _mediaPlaybackService.PlayPreviousAsync(); //await _mediaPlaybackService.PreviousAsync();
+        private void Mute() => _mediaPlaybackService.Mute();
+
     }
 }

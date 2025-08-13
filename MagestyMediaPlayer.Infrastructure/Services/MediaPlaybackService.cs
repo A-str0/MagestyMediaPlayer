@@ -43,7 +43,7 @@ namespace MagestyMediaPlayer.Infrastructure.Services
 
         public async Task PlayAsync(MediaItem? mediaItem)
         {
-            if (mediaItem == null) return;
+            if (mediaItem == null || MediaPlayer == null) return;
 
             await Task.Run(() =>
             {
@@ -70,10 +70,22 @@ namespace MagestyMediaPlayer.Infrastructure.Services
 
         public void SetPosition(float position)
         {
-            if (MediaPlayer != null && MediaPlayer.Media != null)
-            {
-                MediaPlayer.Position = position;
-            }
+            if (MediaPlayer == null || MediaPlayer.Media != null) return;
+
+            MediaPlayer.Position = position;
+        }
+
+        public void SetVolume(int volume)
+        {
+            if (MediaPlayer == null) return;
+
+            MediaPlayer.Volume = volume;
+        }
+
+        public void Mute()
+        {
+            MediaPlayer.ToggleMute();
+            Debug.WriteLine($"{this}: Mute status: {MediaPlayer.Mute}", "debug");
         }
 
         private async Task OnCurrentItemChanged(MediaItem? item)
