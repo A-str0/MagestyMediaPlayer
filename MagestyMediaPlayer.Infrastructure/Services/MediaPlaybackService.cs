@@ -34,6 +34,7 @@ namespace MagestyMediaPlayer.Infrastructure.Services
             _vlc = new LibVLC();
             _mediaPlayer = new MediaPlayer(_vlc);
             _mediaPlayer.EndReached += async (s, e) => await OnEndReached();
+            // _mediaPlayer.TimeChanged += (s, e) => OnTimeChanged(s, e);
 
             // _cache = cache;
             _queue = new PlaybackQueue();
@@ -65,6 +66,14 @@ namespace MagestyMediaPlayer.Infrastructure.Services
         public async Task PlayPreviousAsync()
         {
             _queue.MovePrevious();
+        }
+
+        public void SetPosition(float position)
+        {
+            if (MediaPlayer != null && MediaPlayer.Media != null)
+            {
+                MediaPlayer.Position = position;
+            }
         }
 
         private async Task OnCurrentItemChanged(MediaItem? item)

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using MagestyMediaPlayer.Core.Interfaces;
 using MagestyMediaPlayer.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,10 +31,31 @@ namespace MagestyMediaPlayer.UI.ViewModels
             }
         }
 
+        private double _trackPosition;
+        public double TrackPosition
+        {
+            get => _trackPosition;
+            set
+            {
+                if (Math.Abs(_trackPosition - value) > 0.001)
+                {
+                    _trackPosition = value;
+                    this.RaiseAndSetIfChanged(ref _trackPosition, value);
+
+                    if (_mediaPlaybackService != null && !_updatingFromPlayer)
+                    {
+                        _mediaPlaybackService.SetPosition((float)value);
+                    }
+                }
+            }
+        }
+
         public ReactiveCommand<Unit, Unit> PlayPauseCommand { get; }
         public ReactiveCommand<Unit, Unit> NextCommand { get; }
         public ReactiveCommand<Unit, Unit> PreviousCommand { get; }
 
+        private readonly DispatcherTimer _progressTimer;
+        private bool _updatingFromPlayer;
 
         public PlaybackControlViewModel()
         {
@@ -45,6 +67,17 @@ namespace MagestyMediaPlayer.UI.ViewModels
                 this.RaisePropertyChanged(nameof(TrackTitle));
                 this.RaisePropertyChanged(nameof(TrackArtist));
             };
+            _progressTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };
+            _progressTimer.Tick += (s, e) =>
+            {
+                if (_mediaPlaybackService.MediaPlayer?.IsPlaying == true)
+                {
+                    _updatingFromPlayer = true;
+                    TrackPosition = _mediaPlaybackService.MediaPlayer.Position;
+                    _updatingFromPlayer = false;
+                }
+            };
+            _progressTimer.Start();
 
             PlayPauseCommand = ReactiveCommand.CreateFromTask(PlayPause);
             NextCommand = ReactiveCommand.CreateFromTask(NextAsync);

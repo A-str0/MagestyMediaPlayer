@@ -35,7 +35,7 @@
 			<Button Background="Red" Foreground="White" Command="{CompiledBinding NextCommand}" IsEnabled="True">
 				<TextBlock Text="+" Foreground="White"/>
 			</Button>
-			<Slider Width="250" Background="Red"/>
+			<Slider Width="250" Background="Red" Value="{Binding TrackPosition, Mode=TwoWay}" Maximum="1"/>
 		</StackPanel>
 
 		<!-- Settings -->
