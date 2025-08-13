@@ -37,7 +37,7 @@ namespace MagestyMediaPlayer.Infrastructure.Services
 
             if (existing == null)
             {
-                mediaItem.Id = Guid.NewGuid();
+                mediaItem.Id = Guid.NewGuid(); // TODO: duplicate check
                 mediaItem.AddedDate = DateTime.Now;
 
                 Debug.WriteLine($"Adding file {mediaItem.FileName} to DB");

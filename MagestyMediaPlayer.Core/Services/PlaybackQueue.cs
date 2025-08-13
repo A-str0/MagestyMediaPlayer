@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using MagestyMediaPlayer.Core.Models;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace MagestyMediaPlayer.Core.Services
 {
