@@ -27,13 +27,13 @@ namespace MagestyMediaPlayer.UI.ViewModels
 
             _mediaPlaybackService = serviceProvider.GetRequiredService<MediaPlaybackService>();
 
-            PlayPauseCommand = ReactiveCommand.Create(PlayPause);
+            PlayPauseCommand = ReactiveCommand.CreateFromTask(PlayPause);
             NextCommand = ReactiveCommand.CreateFromTask(NextAsync);
             PreviousCommand = ReactiveCommand.CreateFromTask(PreviousAsync);
         }
 
-        public void PlayPause() => Debug.WriteLine("play :|"); //_mediaPlaybackService?.PlayPause();
+        public async Task PlayPause() => await _mediaPlaybackService.PlayPauseAsync(); //_mediaPlaybackService?.PlayPause();
         public async Task NextAsync() => await _mediaPlaybackService.PlayNextAsync(); //await _mediaPlaybackService.NextAsync();
-        public async Task PreviousAsync() => Debug.WriteLine("prev :()"); //await _mediaPlaybackService.PreviousAsync();
+        public async Task PreviousAsync() => await _mediaPlaybackService.PlayPreviousAsync(); //await _mediaPlaybackService.PreviousAsync();
     }
 }

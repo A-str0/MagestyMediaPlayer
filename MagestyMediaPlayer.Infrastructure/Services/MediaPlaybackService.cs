@@ -32,10 +32,10 @@ namespace MagestyMediaPlayer.Infrastructure.Services
 
             _vlc = new LibVLC();
             _mediaPlayer = new MediaPlayer(_vlc);
+            _mediaPlayer.EndReached += async (s, e) => await OnEndReached();
 
             // _cache = cache;
             _queue = new PlaybackQueue();
-
             _queue.CurrentItemChanged += async (s, e) => await OnCurrentItemChanged(e);
         }
 
@@ -51,11 +51,19 @@ namespace MagestyMediaPlayer.Infrastructure.Services
             });
         }
 
+        public async Task PlayPauseAsync()
+        {
+            _mediaPlayer.SetPause(_mediaPlayer.IsPlaying);
+        }
+
         public async Task PlayNextAsync()
         {
             _queue.MoveNext();
+        }
 
-            await PlayAsync(_queue.Current);
+        public async Task PlayPreviousAsync()
+        {
+            _queue.MovePrevious();
         }
 
         private async Task OnCurrentItemChanged(MediaItem? item)
@@ -78,6 +86,11 @@ namespace MagestyMediaPlayer.Infrastructure.Services
             {
                 _mediaPlayer.Stop();
             }
+        }
+
+        private async Task OnEndReached()
+        {
+            await PlayNextAsync();
         }
 
         // TODO: change or delete
