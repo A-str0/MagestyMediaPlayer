@@ -16,8 +16,8 @@
 
 		<!-- Media data -->
 		<StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0">
-			<TextBlock Text="Название трека" Foreground="White" FontSize="16"/>
-			<TextBlock Text="Артист" Foreground="White" FontSize="12"/>
+			<TextBlock Text="{Binding TrackTitle}" Foreground="White" FontSize="16"/>
+			<TextBlock Text="{Binding TrackArtist}" Foreground="White" FontSize="12"/>
 		</StackPanel>
 
 		<!-- Media control -->

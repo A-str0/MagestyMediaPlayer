@@ -24,6 +24,7 @@ namespace MagestyMediaPlayer.Infrastructure.Services
         public MediaItem? CurrentQueueItem => _queue.Current;
         public Media? CurrentPlayingMedia => _mediaPlayer.Media;
 
+        public event EventHandler<MediaItem?>? CurrentTrackChanged;
 
         // public MediaPlaybackService(IMemoryCache cache)
         public MediaPlaybackService()
@@ -86,6 +87,8 @@ namespace MagestyMediaPlayer.Infrastructure.Services
             {
                 _mediaPlayer.Stop();
             }
+
+            CurrentTrackChanged?.Invoke(this, item);
         }
 
         private async Task OnEndReached()

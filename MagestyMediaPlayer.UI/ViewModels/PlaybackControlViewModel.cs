@@ -16,6 +16,20 @@ namespace MagestyMediaPlayer.UI.ViewModels
     {
         private readonly MediaPlaybackService _mediaPlaybackService;
 
+        public string TrackTitle {
+            get
+            {
+                return _mediaPlaybackService.CurrentQueueItem?.Title??"TITLE PLACEHOLDER";
+            }
+        }
+        public string TrackArtist
+        {
+            get
+            {
+                return _mediaPlaybackService.CurrentQueueItem?.Artist??"ARTIST PLACEHOLDER";
+            }
+        }
+
         public ReactiveCommand<Unit, Unit> PlayPauseCommand { get; }
         public ReactiveCommand<Unit, Unit> NextCommand { get; }
         public ReactiveCommand<Unit, Unit> PreviousCommand { get; }
@@ -26,6 +40,11 @@ namespace MagestyMediaPlayer.UI.ViewModels
             IServiceProvider serviceProvider = Program.Services.CreateScope().ServiceProvider;
 
             _mediaPlaybackService = serviceProvider.GetRequiredService<MediaPlaybackService>();
+            _mediaPlaybackService.CurrentTrackChanged += (s, e) =>
+            {
+                this.RaisePropertyChanged(nameof(TrackTitle));
+                this.RaisePropertyChanged(nameof(TrackArtist));
+            };
 
             PlayPauseCommand = ReactiveCommand.CreateFromTask(PlayPause);
             NextCommand = ReactiveCommand.CreateFromTask(NextAsync);
